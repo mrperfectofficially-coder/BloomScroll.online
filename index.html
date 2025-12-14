@@ -1,302 +1,675 @@
 <!doctype html>
+
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8" />
+
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BetterScroll — Feel-good Reels</title>
-<meta name="description" content="Minimal, premium feed of uplifting short videos — no login, no noise.">
+
+<title>Bloomscroll — Infinite Calm Feed</title>
+
+<meta name="description" content="Bloomscroll is an ultra-minimal, Apple-style infinite video feed powered by Google Sheets." />
+
+
+
 <style>
-  :root{--bg:#0a0a0b;--card-bg:rgba(255,255,255,0.02);--muted:rgba(255,255,255,0.72);--max-width:920px;--gap:18px;--flute-stripe:repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0 2px, rgba(255,255,255,0) 2px 4px);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial}
-  *{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased}
-  body{display:flex;align-items:center;justify-content:center;padding:28px 16px}
-  .app{width:100%;max-width:var(--max-width);height:calc(100vh - 56px);border-radius:28px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.008));border:1px solid rgba(255,255,255,0.03);box-shadow:0 18px 60px rgba(0,0,0,0.65);display:flex;flex-direction:column}
-  header{height:72px;padding:12px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.02);backdrop-filter:blur(6px) saturate(120%);background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0))}
-  .logo{display:flex;gap:12px;align-items:center;font-weight:600}.mark{width:16px;height:16px;border-radius:5px;background:linear-gradient(180deg,#fff,#ddd);box-shadow:0 6px 18px rgba(255,255,255,0.06)}
-  .header-note{margin-left:auto;color:var(--muted);font-size:13px}
-  .feed{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:var(--gap);-webkit-overflow-scrolling:touch}
-  .empty{text-align:center;color:var(--muted);padding:48px 10px}
-  .card{border-radius:16px;overflow:hidden;background:var(--card-bg);border:1px solid rgba(255,255,255,0.02);transition:transform .18s,box-shadow .18s}
-  .card:hover{transform:translateY(-6px);box-shadow:0 28px 80px rgba(0,0,0,0.6)}
-  .media{position:relative;width:100%;aspect-ratio:16/9;background:#050505;display:flex;align-items:center;justify-content:center}
-  .media iframe,.media video{width:100%;height:100%;display:block;border:0}
-  .attr{display:flex;align-items:center;gap:10px;padding:12px 14px;font-size:13px;color:var(--muted);border-top:1px solid rgba(255,255,255,0.02)}
-  .platform-icon{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.03);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px}
-  .meta{display:flex;flex-direction:column}.plat{font-size:11px;color:var(--muted)}.user{font-weight:700;color:#fff;text-decoration:none}
-  .loader{width:36px;height:36px;border-radius:50%;border:3px solid rgba(255,255,255,0.06);border-top-color:#fff;animation:spin 1s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:60;backdrop-filter:blur(6px)}
-  .modal{width:min(92%,520px);border-radius:22px;padding:22px;position:relative;background:linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.06);box-shadow:0 30px 80px rgba(0,0,0,0.65);overflow:hidden}
-  .modal::before{content:'';position:absolute;inset:0;background-image:var(--flute-stripe);mix-blend-mode:overlay;opacity:0.8;pointer-events:none}
-  .modal h2{margin:0 0 6px 0;font-size:20px}.modal p{margin:0 0 14px 0;color:var(--muted);font-size:13px}
-  .options{display:flex;flex-wrap:wrap;gap:10px}.opt-btn{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,0.05);border:0;color:#fff;font-weight:700;cursor:pointer;transition:transform .12s}.opt-btn:hover{transform:translateY(-4px)}.opt-btn.active{background:linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));box-shadow:0 10px 30px rgba(0,0,0,0.4)}
-  .count-row{display:flex;gap:10px;margin-top:10px}.count-chip{padding:10px 12px;border-radius:999px;background:rgba(255,255,255,0.03);cursor:pointer;font-weight:700}.count-chip.active{background:rgba(255,255,255,0.09)}
-  .modal .cta{display:flex;gap:10px;margin-top:14px}.btn-primary{flex:1;padding:12px;border-radius:12px;background:#fff;color:#000;border:0;font-weight:800;cursor:pointer}.btn-ghost{padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted);cursor:pointer}
-  a.no-underline{text-decoration:none;color:inherit}
-  @media (max-width:720px){body{padding:14px}header{height:64px;padding:10px}.modal{width:min(96%,420px);padding:18px;border-radius:18px}}
+
+:root{
+
+  --bg:#0a0b0d;
+
+  --panel:rgba(255,255,255,0.035);
+
+  --border:rgba(255,255,255,0.06);
+
+  --muted:rgba(255,255,255,0.65);
+
+  --radius-lg:28px;
+
+  --radius-md:18px;
+
+  --shadow:0 35px 90px rgba(0,0,0,0.7);
+
+  --max:960px;
+
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+
+}
+
+
+
+*{box-sizing:border-box}
+
+html,body{margin:0;height:100%;background:var(--bg);color:#fff}
+
+
+
+body{
+
+  display:flex;
+
+  justify-content:center;
+
+  padding:22px;
+
+}
+
+
+
+.app{
+
+  width:100%;
+
+  max-width:var(--max);
+
+  height:calc(100vh - 44px);
+
+  background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.015));
+
+  border-radius:var(--radius-lg);
+
+  border:1px solid var(--border);
+
+  box-shadow:var(--shadow);
+
+  overflow:hidden;
+
+  display:flex;
+
+  flex-direction:column;
+
+}
+
+
+
+header{
+
+  height:68px;
+
+  padding:0 22px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  border-bottom:1px solid rgba(255,255,255,0.05);
+
+  backdrop-filter:blur(10px);
+
+}
+
+
+
+.brand{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  font-weight:600;
+
+  letter-spacing:.2px;
+
+}
+
+
+
+.mark{
+
+  width:14px;height:14px;border-radius:4px;
+
+  background:linear-gradient(180deg,#fff,#cfcfcf);
+
+}
+
+
+
+.subtitle{font-size:12px;color:var(--muted)}
+
+
+
+.feed{
+
+  flex:1;
+
+  overflow-y:auto;
+
+  padding:24px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:24px;
+
+  scroll-behavior:smooth;
+
+}
+
+
+
+.card{
+
+  background:var(--panel);
+
+  border:1px solid rgba(255,255,255,0.04);
+
+  border-radius:var(--radius-md);
+
+  overflow:hidden;
+
+  transition:transform .25s ease, box-shadow .25s ease;
+
+}
+
+
+
+.card:hover{
+
+  transform:translateY(-6px);
+
+  box-shadow:0 26px 70px rgba(0,0,0,0.6);
+
+}
+
+
+
+.media{
+
+  width:100%;
+
+  aspect-ratio:16/9;
+
+  background:#050506;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+}
+
+
+
+.media iframe,.media video{
+
+  width:100%;height:100%;border:0;display:block;
+
+}
+
+
+
+.meta{
+
+  padding:12px 14px;
+
+  font-size:13px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  color:var(--muted);
+
+}
+
+
+
+.loader{
+
+  width:34px;height:34px;border-radius:50%;
+
+  border:3px solid rgba(255,255,255,0.12);
+
+  border-top-color:#fff;
+
+  animation:spin 1s linear infinite;
+
+}
+
+
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+
+
+.empty{
+
+  text-align:center;
+
+  color:var(--muted);
+
+  margin-top:80px;
+
+}
+
+
+
+@media(max-width:720px){
+
+  body{padding:14px}
+
+  .feed{padding:16px}
+
+}
+
 </style>
+
 </head>
+
 <body>
-  <div class="app" id="appRoot">
-    <header>
-      <div class="logo"><div class="mark" aria-hidden="true"></div><div style="line-height:1"><div style="font-size:16px">BetterScroll</div><div style="font-size:12px;color:var(--muted);margin-top:2px">feel-good reels — no login</div></div></div>
-      <div class="header-note">No login • No noise</div>
-    </header>
 
-    <main class="feed" id="feed" aria-live="polite">
-      <div class="empty" id="loadingBlock"><div style="font-size:13px;margin-bottom:12px;color:var(--muted)">Loading curated reels…</div><div class="loader" aria-hidden="true"></div></div>
-    </main>
 
-    <div class="overlay" id="modalOverlay" style="display:none">
-      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <h2 id="modalTitle">What should we play next?</h2>
-        <p class="small">Pick a category and how many reels you want — no typing. We’ll remember this on this device.</p>
 
-        <div class="options" id="modalCategories"></div>
-        <div style="margin-top:12px;font-size:13px;color:var(--muted)">How many reels now?</div>
-        <div class="count-row" id="modalCounts" style="margin-top:8px">
-          <div class="count-chip" data-count="10">10</div>
-          <div class="count-chip" data-count="20">20</div>
-          <div class="count-chip" data-count="30">30</div>
-          <div class="count-chip" data-count="inf">Infinite</div>
-        </div>
+<div class="app">
 
-        <div class="cta">
-          <button class="btn-primary" id="modalStart">Start</button>
-          <button class="btn-ghost" id="modalSkip">Skip</button>
-        </div>
-      </section>
+  <header>
+
+    <div class="brand">
+
+      <div class="mark"></div>
+
+      <div>
+
+        Bloomscroll
+
+        <div class="subtitle">infinite calm feed</div>
+
+      </div>
+
     </div>
-  </div>
+
+    <div class="subtitle">No login</div>
+
+  </header>
+
+
+
+  <main class="feed" id="feed">
+
+    <!-- Preference Modal -->
+
+    <div class="overlay" id="prefOverlay" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);z-index:50">
+
+      <div style="background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.1);border-radius:26px;padding:26px;width:min(92%,440px);box-shadow:0 40px 120px rgba(0,0,0,.8)">
+
+        <h3 style="margin:0 0 6px;font-weight:600">Choose your flow</h3>
+
+        <p style="margin:0 0 18px;font-size:13px;color:var(--muted)">Pick a category and how long you want to scroll</p>
+
+
+
+        <div id="catOptions" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px"></div>
+
+
+
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Session length</div>
+
+        <div id="countOptions" style="display:flex;gap:12px">
+
+          <button class="count-pill" data-count="5">5 reels</button>
+
+          <button class="count-pill" data-count="10">10 reels</button>
+
+          <button class="count-pill" data-count="20">20 reels</button>
+
+          <button class="count-pill" data-count="inf">Infinite</button>
+
+        </div>
+
+
+
+        <button id="startBtn" style="margin-top:22px;width:100%;padding:14px;border-radius:16px;border:0;font-weight:700;background:#fff;color:#000">Start watching</button>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="empty">
+
+      <div style="margin-bottom:12px">Blooming videos…</div>
+
+      <div class="loader"></div>
+
+    </div>
+
+  </main>
+
+</div>
+
+
 
 <script>
-/* ======== PASTE YOUR PUBLISHED CSV URL BELOW ========
-   This is the URL you shared. If you later change sheets,
-   update this value. */
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfQdvMHXzOlfaiN0c0cILE0z6u8m50w8cFjA3VZB_yQRsWwID_JrI06ylK6BQ_ew2InFf7fpujXhS_/pub?output=csv';
 
-/* sensible defaults if categories absent */
-const DEFAULT_CATEGORIES = ['Motivation','Fitness','Productivity','Stoicism','Study','Entrepreneurship'];
+// ================================
 
-const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
+// BLOOMSCROLL CORE — FIXED
 
-/* robust CSV parser - handles quoted fields */
-function parseCSV(text){
-  const rows=[]; let cur=[], token='', inQuotes=false;
-  for (let i=0;i<text.length;i++){
-    const ch=text[i], nxt=text[i+1];
-    if (ch === '"') { if (inQuotes && nxt === '"') { token += '"'; i++; continue } inQuotes = !inQuotes; continue }
-    if (ch === ',' && !inQuotes) { cur.push(token); token=''; continue }
-    if ((ch === '\n' || ch === '\r') && !inQuotes) { if (token !== '' || cur.length > 0) { cur.push(token); rows.push(cur); cur=[]; token=''; } if (ch === '\r' && nxt === '\n') i++; continue }
-    token += ch;
-  }
-  if (token !== '' || cur.length > 0) { cur.push(token); rows.push(cur) }
-  return rows;
-}
+// ================================
 
-/* try direct fetch, fallback to proxy for CORS */
-async function fetchCsvWithFallback(url){
-  try {
-    const res = await fetch(url, {cache:'no-cache', mode:'cors'});
-    if (res.ok) return await res.text();
-    throw new Error('Direct fetch returned ' + res.status);
-  } catch (err) {
-    console.warn('Direct fetch failed:', err.message || err);
-    const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-    const pres = await fetch(proxy, {cache:'no-cache', mode:'cors'});
-    if (!pres.ok) throw new Error('Proxy fetch failed ' + pres.status);
-    return await pres.text();
-  }
-}
 
-/* normalize cell values: trim, treat -- or - as empty */
-function normCell(val){
-  if (val === null || val === undefined) return '';
-  const s = String(val).trim();
-  if (s === '--' || s === '—' || s === '-' ) return '';
-  return s;
-}
 
-/* parse sheet rows into objects; supports header row variants */
-async function fetchSheet(url){
-  const raw = await fetchCsvWithFallback(url);
-  const rows = parseCSV(raw);
-  if (!rows.length) return [];
-  // treat first row as header if it contains 'url' or 'platform'
-  const first = rows[0].map(h => normCell(h).toLowerCase());
-  const headerDetected = first.some(h => ['platform','url','username','category'].includes(h));
-  if (headerDetected){
-    const header = first;
-    const out = rows.slice(1).map(r => {
-      const obj = {};
-      for (let i=0;i<header.length;i++){
-        obj[header[i]] = normCell(r[i] || '');
-      }
-      return obj;
-    });
-    return out.filter(x => x.url && x.url.length);
-  } else {
-    // no headers: assume single column (URL)
-    return rows.map(r => ({ platform:'', url: normCell(r[0]||''), username:'', category:'' })).filter(x => x.url);
-  }
-}
+// 1️⃣ Google Sheets CSV URL
 
-/* platform detection (flexible) */
-function platformKey(name, url){
-  const s = (name||'').toString().toLowerCase();
-  if (s.includes('youtube') || s.includes('yt') || (url && url.includes('youtube.com'))) return 'youtube';
-  if (s.includes('tiktok') || s.includes('tik') || (url && url.includes('tiktok.com'))) return 'tiktok';
-  if (s.includes('instagram') || s.includes('insta') || (url && url.includes('instagram.com'))) return 'instagram';
-  return '';
-}
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/10QQVEXVhQ_p7kO4DyIGzDXfEmQzNNFkV4iC3i_MSmLw/export?format=csv";
 
-/* extract username sensibly if missing */
-function extractUsernameFromUrl(url, platform){
-  try {
+
+
+const feed = document.getElementById('feed');
+
+
+
+// CSV parser — fixed for Windows/Unix line endings
+
+const parseCSV = text => {
+
+  const rows = text.split(/\r?\n/).slice(1).filter(Boolean);
+
+  return rows.map(r=>{
+
+    const [url, platform, category] = r.split(',').map(x=>x?.trim());
+
+    return { url, platform, category };
+
+  }).filter(r=>r.url && r.platform);
+
+};
+
+
+
+// YouTube ID extractor
+
+const getYouTubeID = url => {
+
+  try{
+
     const u = new URL(url);
-    if (platform === 'tiktok'){
-      const parts = u.pathname.split('/').filter(Boolean);
-      if (parts[0] && parts[0].startsWith('@')) return parts[0].slice(1);
-      if (parts[0] && parts[1] === 'video') return parts[0].replace('@','');
-    }
-    if (platform === 'instagram'){
-      const parts = u.pathname.split('/').filter(Boolean);
-      if (parts[0] && parts[0] !== 'reel' && parts[0] !== 'p') return parts[0];
-      const idx = parts.indexOf('reel'); if (idx !== -1 && parts[idx+1]) return parts[idx+1];
-    }
-    if (platform === 'youtube'){
-      const parts = u.pathname.split('/').filter(Boolean);
-      if (parts[0] && parts[0].startsWith('@')) return parts[0].slice(1);
-      // fallback to video id
-      const v = u.searchParams.get('v') || (url.match(/\/shorts\/([^\/\?]+)/) && url.match(/\/shorts\/([^\/\?]+)/)[1]);
-      return v || u.hostname.replace('www.','');
-    }
-    return u.hostname.replace('www.','');
-  } catch(e){
-    return 'unknown';
-  }
+
+    return u.searchParams.get('v') || url.split('/').pop();
+
+  }catch{return null}
+
 }
 
-/* load external script once */
-function loadScriptOnce(src,id){ return new Promise((resolve,reject)=>{ if (id && document.getElementById(id)) return resolve(); const s=document.createElement('script'); s.src=src; if(id) s.id=id; s.async=true; s.onload=()=>resolve(); s.onerror=()=>reject(new Error('Failed to load '+src)); document.body.appendChild(s); }); }
 
-/* create card DOM */
-function createCard(item, idx){
-  const card = document.createElement('article'); card.className='card'; card.dataset.index = idx;
-  card.dataset.src = item.url || '';
-  const plt = platformKey(item.platform, item.url);
-  card.dataset.platform = plt;
-  const providedUser = normCell(item.username || '');
-  const username = providedUser || extractUsernameFromUrl(item.url || '', plt);
-  card.dataset.username = username || '@unknown';
-  card.dataset.category = normCell(item.category || '');
 
-  const media = document.createElement('div'); media.className='media'; media.innerHTML = `<div class="loader" aria-hidden="true"></div>`; card.appendChild(media);
-  const attr = document.createElement('div'); attr.className='attr';
-  const platLabel = (plt==='youtube') ? 'YouTube' : (plt==='tiktok') ? 'TikTok' : (plt==='instagram') ? 'Instagram' : (item.platform || '').trim() || 'Source';
-  const icon = document.createElement('div'); icon.className='platform-icon'; icon.textContent = platLabel.charAt(0);
-  const meta = document.createElement('div'); meta.className='meta';
-  const plat = document.createElement('div'); plat.className='plat'; plat.textContent = platLabel;
-  const user = document.createElement('a'); user.className='user no-underline'; user.href = item.url || '#'; user.target='_blank'; user.rel='noopener noreferrer'; user.textContent = card.dataset.username;
-  meta.appendChild(plat); meta.appendChild(user); attr.appendChild(icon); attr.appendChild(meta); card.appendChild(attr);
+// Create a video card
+
+function createCard(url){
+
+  const card = document.createElement('article');
+
+  card.className = 'card';
+
+  card.dataset.url = url;
+
+
+
+  const media = document.createElement('div');
+
+  media.className = 'media';
+
+  media.innerHTML = '<div class="loader"></div>';
+
+
+
+  const meta = document.createElement('div');
+
+  meta.className = 'meta';
+
+  meta.textContent = new URL(url).hostname;
+
+
+
+  card.append(media, meta);
+
   return card;
+
 }
 
-/* embed activation (lazy) */
-async function activateEmbed(card){
-  if (card.dataset.embedded === '1') return;
-  const media = card.querySelector('.media'); const src = card.dataset.src || ''; const plt = card.dataset.platform;
-  media.innerHTML = '';
-  if (plt === 'youtube'){
-    try {
-      const id = (new URL(src)).searchParams.get('v') || (src.match(/\/shorts\/([^\/\?]+)/) && src.match(/\/shorts\/([^\/\?]+)/)[1]) || src.split('/').pop();
-      if (!id) { media.innerHTML = `<a href="${src}" target="_blank" class="no-underline small">Open on YouTube</a>`; card.dataset.embedded='1'; return; }
-      const iframe = document.createElement('iframe'); iframe.src = `https://www.youtube.com/embed/${id}?rel=0&playsinline=1&mute=1&modestbranding=1`; iframe.allow='autoplay; encrypted-media; picture-in-picture'; iframe.setAttribute('allowfullscreen',''); media.appendChild(iframe); card.dataset.embedded='1'; return;
-    } catch(e){ media.innerHTML = `<a href="${src}" target="_blank">Open on YouTube</a>`; card.dataset.embedded='1'; return; }
-  }
-  if (plt === 'tiktok'){
-    const block = document.createElement('blockquote'); block.className='tiktok-embed'; block.setAttribute('cite', src); block.setAttribute('data-video-id', (src.match(/video\/(\d+)/) || [null,null])[1] || ''); block.style.width='100%'; block.style.margin='0 auto'; block.innerHTML = `<section></section>`; media.appendChild(block);
-    try { await loadScriptOnce('https://www.tiktok.com/embed.js','tiktok-embed-script'); } catch(e){ console.warn('TikTok embed script failed'); }
-    card.dataset.embedded='1'; return;
-  }
-  if (plt === 'instagram'){
-    // if url is profile (no /p/ or /reel/), embedding won't work; we'll still create blockquote and Instagram script will try
-    const block = document.createElement('blockquote'); block.className='instagram-media'; block.setAttribute('data-instgrm-permalink', src); block.style.width='100%'; block.style.margin='0 auto'; media.appendChild(block);
-    try { await loadScriptOnce('https://www.instagram.com/embed.js','instagram-embed-script'); } catch(e){ console.warn('Instagram embed script failed'); }
-    card.dataset.embedded='1'; return;
-  }
-  media.innerHTML = `<a href="${src}" target="_blank" class="no-underline small">Open source</a>`; card.dataset.embedded='1';
-}
 
-/* intersection observer */
-const feedRoot = $('#feed');
-const observer = new IntersectionObserver((entries)=>{ entries.forEach(ent=>{ if (ent.isIntersecting) activateEmbed(ent.target); }); }, { root: feedRoot, threshold:0.5 });
 
-/* apply saved preferences: category filter & count limit */
-function applyPreferences(){
-  const prefCat = localStorage.getItem('bs_pref_cat');
-  const prefCount = localStorage.getItem('bs_pref_count');
-  const cards = $$('.card');
-  let shown = 0;
-  const max = (prefCount && prefCount !== 'inf') ? parseInt(prefCount,10) : Infinity;
-  cards.forEach(c=>{
-    const cat = (c.dataset.category || '').toLowerCase();
-    const match = !prefCat || (cat && cat.includes(prefCat.toLowerCase()));
-    if (match && shown < max){ c.style.display=''; observer.observe(c); shown++; } else { c.style.display='none'; observer.unobserve(c); }
+// ================================
+
+// YOUTUBE AUTO-NEXT
+
+// ================================
+
+let ytPlayers = {};
+
+
+
+function loadYouTubeAPI(){
+
+  return new Promise(resolve=>{
+
+    if (window.YT && window.YT.Player) return resolve();
+
+    const s = document.createElement('script');
+
+    s.src = 'https://www.youtube.com/iframe_api';
+
+    window.onYouTubeIframeAPIReady = () => resolve();
+
+    document.body.appendChild(s);
+
   });
+
 }
 
-/* show the fluted glass modal */
-function showModal(rows){
-  const overlay = $('#modalOverlay'); const catCont = $('#modalCategories'); catCont.innerHTML = '';
-  const catsFromSheet = Array.from(new Set(rows.map(r => (r.category||'').trim()).filter(Boolean))).slice(0,8);
-  const list = catsFromSheet.length ? catsFromSheet : DEFAULT_CATEGORIES;
-  list.forEach(c => {
-    const b = document.createElement('button'); b.className='opt-btn'; b.textContent=c; b.dataset.cat=c;
-    b.onclick = ()=>{ catCont.querySelectorAll('.opt-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
-    catCont.appendChild(b);
+
+
+function scrollToNext(card){
+
+  const next = card.nextElementSibling;
+
+  if (next) next.scrollIntoView({ behavior:'smooth', block:'start' });
+
+}
+
+
+
+// Intersection observer for lazy load
+
+const observer = new IntersectionObserver(entries => {
+
+  entries.forEach(entry => {
+
+    if (!entry.isIntersecting) return;
+
+    const card = entry.target;
+
+    if (card.dataset.loaded) return;
+
+
+
+    const url = card.dataset.url;
+
+    const yt = getYouTubeID(url);
+
+
+
+    if (yt) {
+
+      const iframe = document.createElement('iframe');
+
+      iframe.src = `https://www.youtube.com/embed/${yt}?enablejsapi=1&playsinline=1&rel=0`;
+
+      iframe.allow = 'autoplay; encrypted-media';
+
+
+
+      const media = card.querySelector('.media');
+
+      media.innerHTML = '';
+
+      media.appendChild(iframe);
+
+
+
+      loadYouTubeAPI().then(()=>{
+
+        ytPlayers[yt] = new YT.Player(iframe,{
+
+          events:{
+
+            onStateChange:e=>{
+
+              if (e.data === YT.PlayerState.ENDED){
+
+                scrollToNext(card);
+
+              }
+
+            }
+
+          }
+
+        });
+
+      });
+
+    } else {
+
+      card.querySelector('.media').innerHTML = `<a href="${url}" target="_blank">Open video</a>`;
+
+    }
+
+
+
+    card.dataset.loaded = '1';
+
   });
-  const counts = $('#modalCounts'); counts.querySelectorAll('.count-chip').forEach(ch => ch.onclick = ()=>{ counts.querySelectorAll('.count-chip').forEach(x=>x.classList.remove('active')); ch.classList.add('active'); });
-  $('#modalStart').onclick = ()=> {
-    const selected = catCont.querySelector('.opt-btn.active') && catCont.querySelector('.opt-btn.active').dataset.cat;
-    const selectedCount = counts.querySelector('.count-chip.active') && counts.querySelector('.count-chip.active').dataset.count;
-    if (selected) localStorage.setItem('bs_pref_cat', selected);
-    if (selectedCount) localStorage.setItem('bs_pref_count', selectedCount);
-    localStorage.setItem('bs_suggestion_shown','1'); overlay.style.display='none'; applyPreferences();
-  };
-  $('#modalSkip').onclick = ()=>{ localStorage.setItem('bs_suggestion_shown','1'); overlay.style.display='none'; applyPreferences(); };
-  overlay.style.display='flex';
-}
 
-/* build feed DOM */
-async function buildFeed(rows){
-  const feed = $('#feed'); feed.innerHTML = '';
-  if (!rows || rows.length === 0){ feed.innerHTML = `<div class="empty">No valid rows found in sheet. Ensure URL column present.</div>`; return; }
-  rows.forEach((r,i)=> feed.appendChild(createCard(r,i)));
-  $$('.card').forEach(c=>observer.observe(c));
-  if (!localStorage.getItem('bs_suggestion_shown')) setTimeout(()=>showModal(rows),700); else applyPreferences();
-}
+},{ threshold:0.6 });
 
-/* main init */
+
+
+// ================================
+
+// INIT FUNCTION — FIXED
+
+// ================================
+
+let allReels = [];
+
+let sessionLimit = null;
+
+let shownCount = 0;
+
+
+
 async function init(){
-  if (!SHEET_CSV_URL){ $('#feed').innerHTML = `<div class="empty">SHEET_CSV_URL not set in the file.</div>`; return; }
-  try {
-    const rows = await fetchSheet(SHEET_CSV_URL);
-    if (!rows.length){ $('#feed').innerHTML = `<div class="empty">Sheet returned no rows. Check CSV publish settings and headers.</div>`; return; }
-    // small normalization: convert '--' placeholders to empty already handled; ensure each row has url
-    const filtered = rows.filter(r => r.url && r.url.length).map(r => ({ platform: r.platform||'', url: r.url||'', username: r.username||'', category: r.category||'' }));
-    await buildFeed(filtered);
-  } catch (err){
-    console.error('Sheet load error', err);
-    $('#feed').innerHTML = `<div class="empty">Error loading sheet: ${err.message}. Deploy this file on HTTPS (Netlify) and ensure the sheet is published as CSV.</div>`;
+
+  try{
+
+    const res = await fetch(SHEET_CSV_URL);
+
+    const text = await res.text();
+
+
+
+    const rows = parseCSV(text);
+
+    allReels = rows;
+
+
+
+    feed.innerHTML = '';
+
+
+
+    if (!allReels.length) {
+
+      feed.innerHTML = `<div class="empty">No videos found in sheet</div>`;
+
+      return;
+
+    }
+
+
+
+    allReels.forEach(item => {
+
+      const card = createCard(item.url);
+
+      feed.appendChild(card);
+
+      observer.observe(card);
+
+      shownCount++;
+
+    });
+
+
+
+  } catch(err){
+
+    console.error(err);
+
+    feed.innerHTML = `<div class="empty">Failed to load Google Sheet</div>`;
+
   }
+
 }
 
-/* dev reset: ctrl/cmd + r clears modal state */
-window.addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='r'){ localStorage.removeItem('bs_suggestion_shown'); localStorage.removeItem('bs_pref_cat'); localStorage.removeItem('bs_pref_count'); location.reload(); } });
+
 
 init();
+
+
+
+// ================================
+
+// Optional fallback for videos near end
+
+// ================================
+
+function attachEndFallback(player, card){
+
+  let checked = false;
+
+  const interval = setInterval(()=>{
+
+    if (!player || !player.getDuration) return;
+
+    const d = player.getDuration();
+
+    const t = player.getCurrentTime();
+
+    if (d && t && d - t < 0.4 && !checked){
+
+      checked = true;
+
+      clearInterval(interval);
+
+      scrollToNext(card);
+
+    }
+
+  }, 500);
+
+}
+
 </script>
+
+
+
 </body>
+
 </html>
+
+
+
 
